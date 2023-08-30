@@ -48,5 +48,39 @@ def Motif_Enumeration(dna_strings, k_mer, d):
 
     return list(patterns) # returns a list of all disinct (k-mer, d)-motifs
             
-                    
+### Pre-conditions: a dna patterns and a list of dna strings...
+### Post-conditions: The sum of minimum distances between pattern and all dna strings...                   
+def Distance_Between_Pattern_And_Strings(pattern, dna_strings):
+    k = len(pattern) 
+    distance = 0
+    for dna_string in dna_strings:
+        hamming_distance = float("inf")
+        # The following loop do this: d(pattern, Text) = min(all k-mers pattern` in Text) Hamming_Distance(patter, pattern`)
+        # In other words it finds the minimum hamming distance value between the given pattern and a substring in Text
+        for k_mer in K_mer_Divider(dna_string, k):
+            if hamming_distance > Hamming_Distance(pattern, k_mer):
+                hamming_distance = Hamming_Distance(pattern, k_mer)
+        
+        distance += hamming_distance
 
+    return distance
+
+
+def All_Strings(k):
+    start_pattern = k * 'A'
+
+    return Neighbors(start_pattern, k)
+
+def Median_String(dna_strings, k):
+    distance = float("inf")
+    median = ""
+
+    patterns = All_Strings(k)
+    for pattern in patterns:
+        if distance > Distance_Between_Pattern_And_Strings(pattern, dna_strings):
+            distance = Distance_Between_Pattern_And_Strings(pattern, dna_strings)
+            median = pattern
+
+    return median
+
+    
