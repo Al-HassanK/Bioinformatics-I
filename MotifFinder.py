@@ -71,16 +71,38 @@ def All_Strings(k):
 
     return Neighbors(start_pattern, k)
 
+### Pre-conditions: Takes a list of DNA strings, and an integer k...
+### Post-conditions: Returns a k-mer pattern that minimizes d(pattern, list_of_dna_strings) among all possible choices of k-mers...
 def Median_String(dna_strings, k):
     distance = float("inf")
     median = ""
 
-    patterns = All_Strings(k)
+    patterns = All_Strings(k) # Find all possible patterns of size k.
     for pattern in patterns:
         if distance > Distance_Between_Pattern_And_Strings(pattern, dna_strings):
             distance = Distance_Between_Pattern_And_Strings(pattern, dna_strings)
             median = pattern
 
     return median
+
+
+def Find_Profile_Most_Probable_K_mer(dna_string, k, profile_matrix):
+    all_k_mers = K_mer_Divider(dna_string, k)
+
+    profile_matrix_indexder = {'A':0, 'C':1, 'G':2, 'T':3}
+    k_mers_probabilities = []
+
+    for k_mer in all_k_mers:
+        probability = 1.0
+        for i in range(k):
+            row_index = profile_matrix_indexder[k_mer[i]]
+            probability *= profile_matrix[row_index][i]
+        
+        k_mers_probabilities.append(probability)
+    
+    most_probable_k_mer_index = k_mers_probabilities.index(max(k_mers_probabilities))
+
+    return all_k_mers[most_probable_k_mer_index]
+
 
     

@@ -1,21 +1,41 @@
 from MotifFinder import *
 import math
 
-path = r"Data/MedianString/inputs/dataset_30304_9.txt"
 
+path = r"Data/ProfileMostProbableKmer/inputs/dataset_30305_3.txt"
 f = open(path)
 lines = f.readlines()
-k = int(lines[0].rstrip())
+dna = lines[0].rstrip()
+k = int(lines[1].rstrip())
+profile = []
+for line in lines[2:]:
+    probs = []
+    for p in line.rstrip().split(' '):
+        probs.append(float(p))
+    profile.append(probs)
 
-dnas = []
-for line in lines[1:]:
-    dnas.append(line.rstrip())
-
-print(dnas)
-print(Median_String(dnas, k))
-
-
+print(Find_Profile_Most_Probable_K_mer(dna, k, profile))
+# print(profile)
 f.close()
+
+
+
+
+# path = r"Data/MedianString/inputs/dataset_30304_9.txt"
+
+# f = open(path)
+# lines = f.readlines()
+# k = int(lines[0].rstrip())
+
+# dnas = []
+# for line in lines[1:]:
+#     dnas.append(line.rstrip())
+
+# print(dnas)
+# print(Median_String(dnas, k))
+
+
+# f.close()
 
 # dnas = ["AAATTGACGCAT", "GACGACCACGTT",
 #          "CGTCAGCGCCTG", "GCTGAGCACCGG",
