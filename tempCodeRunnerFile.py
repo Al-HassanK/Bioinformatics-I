@@ -1,1 +1,2 @@
 
+dna_strings = []
