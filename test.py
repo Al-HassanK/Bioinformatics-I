@@ -19,19 +19,22 @@ import scipy.stats
 # print(best)
 
 
-path = r"Data/RandomizedMotifSearch/inputs/dataset_30307_5.txt"
+path = r"Data/GibbsSampler/inputs/dataset_30309_11.txt"
 f = open(path)
 lines = f.readlines()
-k, t = lines[0].rstrip().split(' ')
-profile = []
+k, t, N = lines[0].rstrip().split(' ')
 dna_strings = []
 for line in lines[1:]:
     for dna_string in line.rstrip().split(' '):
         dna_strings.append(dna_string)
 
-res = Run_Randomized_Motif_Search(dna_strings, int(k), int(t))
-for r in res:
-    print(r, end=' ')    
+results = Run_Gibbs_Sampler(dna_strings, int(k), int(t), int(N), 20)
+for res in results:
+    print(res, end=' ')
+
+# res = Run_Randomized_Motif_Search(dna_strings, int(k), int(t))
+# for r in res:
+#     print(r, end=' ')    
 # print(res)
 
 # print(dna_strings[0][25:])

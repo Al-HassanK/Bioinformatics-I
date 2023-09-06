@@ -110,6 +110,18 @@ def Find_Profile_Most_Probable_K_mer(dna_string, k, profile_matrix):
 
     return all_k_mers[most_probable_k_mer_index]
 
+
+def Pr(motif, profile_matrix):
+    probabiltiy = 1.0
+    profile_matrix_indexder = {'A':0, 'C':1, 'G':2, 'T':3}
+
+    for i in range(len(motif)):
+        row_index = profile_matrix_indexder[motif[i]]
+        probabiltiy *= profile_matrix[row_index][i]
+
+    return probabiltiy
+
+
 ### Pre-conditions: takes a list of DNA motifs...
 ### Post-conditions: Returns a numpy array of size 4 * k (the length of one motif) which contains the occurrences of each
 # nucleotide in each column of the given motifs list...
@@ -221,11 +233,66 @@ def Run_Randomized_Motif_Search(dna_strings, k, t, num_of_iterations=1000):
     motifs = Randomized_Motif_Search(dna_strings, k)
     best_motifs = motifs
 
-    for i in range(num_of_iterations):
+    for _ in range(num_of_iterations):
         motifs = Randomized_Motif_Search(dna_strings, k)
         if Score(motifs) < Score(best_motifs):
             best_motifs = motifs
         else:
             final_best_motifs = best_motifs
         
+    return final_best_motifs
+
+
+def Random(probability_distribution, n):
+    random.seed()
+    a = random.random() * sum(probability_distribution)
+    sum_pr = 0
+    for i in range(n-1):
+        if a >= sum_pr and a < sum_pr + probability_distribution[i]:
+            return i
+        sum_pr += probability_distribution[i]
+
+    return n-1
+
+
+def Profile_Randomly_Generated_K_mer(dna_string, k, profile_matrix):
+    n = len(dna_string) - k + 1
+
+    dna_string_k_mers =  [dna_string[i:i+k] for i in range(n)]
+
+    probabilities = [Pr(k_mer, profile_matrix) for k_mer in dna_string_k_mers]
+
+    i = Random(probabilities, len(probabilities))
+    
+    return dna_string_k_mers[i]
+
+
+
+def Gibbs_Sampler(dna_strings, k, t, N):
+    motifs = Generate_Random_K_mers(dna_strings, k)
+    best_motifs = motifs
+    for _ in range(N):
+        i = random.randint(0, t-1)
+        chosen_motifs = motifs[:i] + motifs[i+1:]
+        profile = Profile(chosen_motifs)
+        motifs[i] = Profile_Randomly_Generated_K_mer(dna_strings[i], k, profile)
+
+        if Score(motifs) < Score(best_motifs):
+            best_motifs = motifs
+    
+    return best_motifs
+
+
+def Run_Gibbs_Sampler(dna_strings, k, t, N, num_of_iterations=200):
+    motifs = Gibbs_Sampler(dna_strings, k, t, N)
+    current_score = Score(motifs)
+    best_score = current_score
+
+    for _ in range(num_of_iterations):
+        motifs = Gibbs_Sampler(dna_strings, k, t, N)
+        current_score = Score(motifs)
+        if current_score < best_score:
+            best_score = current_score
+            final_best_motifs = motifs            
+
     return final_best_motifs
