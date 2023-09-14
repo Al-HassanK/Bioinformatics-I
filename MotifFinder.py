@@ -1,3 +1,9 @@
+"""
+    This File contains the functions in the interactive text for weeks 3 and 3. The methods and algorithms defined here are different versions of search algorithms.
+    You can use these method to develop a program that solve the motif finding problem according to your data you can choose the suitable algorithm to find your motif...
+
+"""
+
 from Methods import *
 import collections
 import numpy
@@ -33,8 +39,8 @@ def Check_Pattern_Existence(pattern, dna_strings, d):
 def Motif_Enumeration(dna_strings, k_mer, d):
     """
         This function is Exhaustive alogrithm to find a motif of length k_mer if it appears in every DNA string, of a passed
-        collection of strings, with at most d mismatches.
-
+        collection of strings, with at most d mismatches. The result is a group of candidate patterns which has the optimal soltuion
+        for the problem...
     """
     patterns = []
     # Generate all k-mer patterns in the first dna string
@@ -79,6 +85,10 @@ def All_Strings(k):
 ### Pre-conditions: Takes a list of DNA strings, and an integer k...
 ### Post-conditions: Returns a k-mer pattern that minimizes d(pattern, list_of_dna_strings) among all possible choices of k-mers...
 def Median_String(dna_strings, k):
+    """
+        This function is another approach for the motif finding problem based on finding a pattern that has the minimum distance
+        between it and a collection of strings, in other words the most candidate pattern to be the solution...
+    """
     distance = float("inf")
     median = ""
 
@@ -93,6 +103,10 @@ def Median_String(dna_strings, k):
 ### Pre-conditions: A DNA string, an integer k, and 4 x k matrix profile...
 ### Post-conditions: A profile-most probable k-mer in DNA string...
 def Find_Profile_Most_Probable_K_mer(dna_string, k, profile_matrix):
+    """
+        This function is simply returns the k-mer pattern with the highest probability according the passed
+        profile matrix...
+    """
     all_k_mers = K_mer_Divider(dna_string, k)
 
     profile_matrix_indexder = {'A':0, 'C':1, 'G':2, 'T':3}
@@ -110,7 +124,8 @@ def Find_Profile_Most_Probable_K_mer(dna_string, k, profile_matrix):
 
     return all_k_mers[most_probable_k_mer_index]
 
-
+### Pre-conditions: A DNA string, and 4 x k matrix profile...
+### Post-conditions: Returns the probability of the given motif...
 def Pr(motif, profile_matrix):
     probabiltiy = 1.0
     profile_matrix_indexder = {'A':0, 'C':1, 'G':2, 'T':3}
@@ -150,11 +165,11 @@ def Count(motifs):
                  count_matrix[count_matrix_indexder[key], i] = nucleotide_counter[key] + 1
 
     return count_matrix
+
 ### Pre-conditions: takes a list of DNA motifs...
 ### Post-conditions: Returns a list of size 4 * k (the length of one motif) which contains the occurrences of each
 # nucleotide in each column of the given motifs list divided by the number of motifs...
 def Profile(motifs):
-    k = len(motifs[0]) # The length of motif
     t = len(motifs) # the number of motifs in the list...
 
     count_matrix = Count(motifs) # Generate Count(motifs) matrix
@@ -179,6 +194,10 @@ def Score(motifs):
 ### Pre-conditions: Takes a list of DNA strings, and integers k and t...
 ### Post-conditions: Returns a collection of strings best_motifs...
 def Greedy_Motif_Search(dna_strings, k, t):
+    """
+        Implementation of another solution for the motif finding problem. This greedy algorithm is a fast heuristic that
+        trades accuracy for speed in order to find an approximate solution...
+    """
     best_motifs = [K_mer_Divider(dna_string, k)[0] for dna_string in dna_strings]
 
     for k_mer in K_mer_Divider(dna_strings[0], k):
@@ -216,6 +235,11 @@ def Motifs(profile_matrix, dna_strings, k):
 ### Pre-conditions: Integers k and t, and a list of strings Dna...
 ### Post-conditions: A list of bestMotifs...
 def Randomized_Motif_Search(dna_strings, k):
+    """
+        This is a Monte Carlo random algorithm which means that it's not guaranteed to return exact solution to the problem,
+        but they do quickly find an approximate solutions. Because of their speed, they can be run many times, allowing us
+        to choose the best approximation from thounds of runs...
+    """
     motifs = Generate_Random_K_mers(dna_strings, k)
     best_motifs = motifs
 
@@ -229,7 +253,10 @@ def Randomized_Motif_Search(dna_strings, k):
             return best_motifs
         
 
-def Run_Randomized_Motif_Search(dna_strings, k, t, num_of_iterations=1000):
+def Run_Randomized_Motif_Search(dna_strings, k, num_of_iterations=1000):
+    """
+        The function responsible for run the Randomized_Motif_Search algorithm num_of_iterations times...
+    """
     motifs = Randomized_Motif_Search(dna_strings, k)
     best_motifs = motifs
 
@@ -242,7 +269,8 @@ def Run_Randomized_Motif_Search(dna_strings, k, t, num_of_iterations=1000):
         
     return final_best_motifs
 
-
+### Pre-conditions: Takes a list contains probability distribution, i.e. (0.4, 0.2, 0.3,...) and their size...
+### Post-conditions: Returns a random index...
 def Random(probability_distribution, n):
     random.seed()
     a = random.random() * sum(probability_distribution)
@@ -255,6 +283,8 @@ def Random(probability_distribution, n):
     return n-1
 
 
+### Pre-conditions: A DNA string, an integer k, and 4 x k matrix profile...
+### Post-conditions: Returns a random k_mer pattern based on the choice from the Random function...
 def Profile_Randomly_Generated_K_mer(dna_string, k, profile_matrix):
     n = len(dna_string) - k + 1
 
@@ -267,8 +297,14 @@ def Profile_Randomly_Generated_K_mer(dna_string, k, profile_matrix):
     return dna_string_k_mers[i]
 
 
-
+### Pre-conditions: Takes a DNA strings, integers k, t, and N...
+### Post-conditions: Returns a list of best motifs that are approximate solution for the problem...
 def Gibbs_Sampler(dna_strings, k, t, N):
+    """
+        This iterative random algorithm is different from the Randomized_Motif_Search that this algorithm is a more catious
+        that discards a single k-mer from the current set of motifs at each iteration and decides to either keep it or replace
+        it with a new one...
+    """
     motifs = Generate_Random_K_mers(dna_strings, k)
     best_motifs = motifs
     for _ in range(N):
@@ -284,6 +320,9 @@ def Gibbs_Sampler(dna_strings, k, t, N):
 
 
 def Run_Gibbs_Sampler(dna_strings, k, t, N, num_of_iterations=200):
+    """
+        The function responsible for run the Gibbs_Sampler algorithm num_of_iterations times...
+    """
     motifs = Gibbs_Sampler(dna_strings, k, t, N)
     current_score = Score(motifs)
     best_score = current_score
@@ -296,3 +335,4 @@ def Run_Gibbs_Sampler(dna_strings, k, t, N, num_of_iterations=200):
             final_best_motifs = motifs            
 
     return final_best_motifs
+

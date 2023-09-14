@@ -1,3 +1,10 @@
+"""
+    This File contains the functions in the interactive text for weeks 1 and 2. The methods and algorithms defined here are used to solve popular string problems
+    like, the finding clumps problem and approximate matching. You can use these method to develop a program that takes a bacterial genome then it can finds and locates
+    the origin of replication "Ori"...
+
+"""
+
 ### Pre-conditions: Takes a text and a pattern you want to look for in the text...
 ### Post-conditions: Returns the number of occurences of the pattern in the text...
 def Pattern_Count(ref_text, pattern):
